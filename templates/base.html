@@ -1,0 +1,326 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <title>인공지능을 활용한 색체 기반 영화 추천</title>
+
+    {% comment %} Thema StyleSheet {% endcomment %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+    {% comment %} Bootstrap CDN {% endcomment %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    {% comment %} Google Font {% endcomment %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+
+    {% comment %} Font Awesome {% endcomment %}
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    {% comment %} Favicon {% endcomment %}
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'favicon/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'favicon/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'favicon/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'favicon/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'favicon/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'favicon/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'favicon/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'favicon/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{% static 'favicon/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'favicon/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'favicon/manifest.json' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{% static 'favicon/ms-icon-144x144.png' %}">
+    <meta name="theme-color" content="#ffffff">
+
+    {% comment %} Style Sheet {% endcomment %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {% comment %} Modal Import {% endcomment %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    {% block option_import %}{% endblock option_import %}
+  </head>
+
+  <body style="font-family: 'Noto Sans KR', sans-serif;"> 
+
+    {% comment %} Background Video {% endcomment %}
+    <div class="video-bg">
+      <video width="320" height="240" autoplay loop muted>
+        <source src="{% static 'videos/background.mp4' %}" type="video/mp4">
+      </video>
+    </div>
+
+    {% comment %} Application {% endcomment %}
+    <div class="app">
+
+      {% comment %} Header {% endcomment %}
+      <div class="header" style="padding: 0px;">
+        <div class="header-menu">
+          <a class="menu-link " href="{% url 'movies:index' 1 %}"
+            style="font-size: 20px; color: white; font-weight: bolder; opacity: 0.9;"> <i class="fas fa-rainbow" style="margin-right:10px; "></i>인공지능을 활용한 색채 기반 영화 추천</a>
+        </div>
+
+        {% comment %} Search Bar {% endcomment %}
+        <form action="{% url 'movies:index' 4 %}">
+        <div class="search-bar" style="max-width: 2000px; margin-left: 150px;">
+          <input id="searchInput" name="searchData" type="text" placeholder="영화 검색하기" style="width:550px; border-radius: 1%">
+          <button id="searchButton" class="d-none"></button>
+        </div>
+        </form>
+
+        {% comment %} User & Login Button {% endcomment %}
+        <div class="header-profile d-flex justify-content-center align-items-center">
+          <div class="notification d-flex justify-content-center align-items-center">
+            <a href="{% url 'movies:quiz' %}" class="btn btn-warning mx-2">티어 올리기</a>
+            {% comment %} User Tier {% endcomment %}
+            {% if user.is_staff %}
+            <img src="https://d2gd6pc034wcta.cloudfront.net/tier/31.svg" alt="" style="width:40px; height:40px; margin-top:3px; margin-right:2px;">
+            {% elif user.point > 200 %}
+            <img src="https://d2gd6pc034wcta.cloudfront.net/tier/25.svg" alt="" style="width:40px; height:40px; margin-top:3px; margin-right:2px;">
+            {% elif user.point > 120 %}
+            <img src="https://d2gd6pc034wcta.cloudfront.net/tier/19.svg" alt="" style="width:40px; height:40px; margin-top:3px; margin-right:2px;">
+            {% elif user.point > 60 %}
+            <img src="https://d2gd6pc034wcta.cloudfront.net/tier/13.svg" alt="" style="width:40px; height:40px; margin-top:3px; margin-right:2px;">
+            {% elif user.point > 20 %}
+            <img src="https://d2gd6pc034wcta.cloudfront.net/tier/7.svg" alt="" style="width:40px; height:40px; margin-top:3px; margin-right:2px;">
+            {% else %}
+            <img src="https://d2gd6pc034wcta.cloudfront.net/tier/1.svg" alt="" style="width:40px; height:40px; margin-top:3px; margin-right:2px;">
+            {% endif %}
+            <h3 style="color: white; margin: 10px; opacity: 0.9;">{{ user.username }}</h3>
+            <button class="btn btn-white mt-1" onclick="location.href = '{% url 'accounts:logout' %}'"> <i class="fas fa-exchange-alt" style="color: white; font-size: 20px; opacity: 0.9;"></i> </button>
+            <button class="btn btn-white mt-1" onclick="location.href = '{% url 'accounts:logout' %}'"> <i class="fas fa-sign-out-alt" style="color: white; font-size: 20px; opacity: 0.9;"></i> </button>
+          </div>
+        </div>
+      </div>
+      {% comment %} END Header {% endcomment %}
+
+
+      {% comment %} Contents {% endcomment %}
+      <div class="wrapper">
+      
+        {% comment %} Profile {% endcomment %}
+        <div class="left-side">
+
+          {% comment %} Profile Section 1 {% endcomment %}
+          <div class="side-wrapper">
+            <div class="side-title">현재 당신의 색채</div>
+            <div class="side-menu">
+              <div
+                style="width:200px; height:200px; border-radius:50%; opacity: 0.9; background: {{ last_color.color }};">
+              </div>
+            </div>
+          </div>
+
+          {% comment %} Profile Section 2 {% endcomment %}
+          <div class="side-wrapper">
+            <div class="side-title">당신을 위한 색채의 기록들</div>
+            <div class="side-menu">
+              {% for color in colors %}
+              <div class="progress mt-3">
+                <div class="progress-bar" role="progressbar" style="width: 100%; opacity: 0.6; background-color: {{ color.color }};" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                  <form action="{% url 'movies:usercolor_update' color.color %}" method="POST">
+                    {% csrf_token %}
+                    <button style="width: 100%; height: 100%; background-color: transparent; background-repeat: no-repeat; border: none; cursor: pointer; overflow: hidden; outline: none;"></button>
+                  </form>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          {% comment %} Profile Section 3 {% endcomment %}
+          <div class="side-wrapper">
+            <div class="side-title">음성인식</div>
+            <div class="side-menu">
+              <a href="#" data-toggle="modal" data-target="#voiceModal">
+                <svg viewBox="0 0 332 332" fill="currentColor">
+                  <path
+                    d="M282.341 8.283C275.765 2.705 266.211 0 253.103 0c-18.951 0-36.359 5.634-51.756 16.743-14.972 10.794-29.274 28.637-42.482 53.028-4.358 7.993-7.428 11.041-8.973 12.179h-26.255c-10.84 0-19.626 8.786-19.626 19.626 0 8.989 6.077 16.486 14.323 18.809l-.05.165h.589c1.531.385 3.109.651 4.757.651h18.833l-32.688 128.001c-7.208 27.848-10.323 37.782-11.666 41.24-1.445 3.711-3.266 7.062-5.542 10.135-.42-5.39-2.637-10.143-6.508-13.854-4.264-4.079-10.109-6.136-17.364-6.136-8.227 0-15.08 2.433-20.37 7.229-5.416 4.93-8.283 11.193-8.283 18.134 0 5.157 1.701 12.712 9.828 19.348 6.139 4.97 14.845 7.382 26.621 7.382 17.096 0 32.541-4.568 45.891-13.577 13.112-8.845 24.612-22.489 34.166-40.522 9.391-17.678 18.696-45.124 28.427-83.9l18.598-73.479h30.016c10.841 0 19.625-8.785 19.625-19.625s-8.784-19.626-19.625-19.626h-19.628c6.34-21.62 14.175-37.948 23.443-48.578 2.284-2.695 5.246-5.692 8.412-7.678-1.543 3.392-2.325 6.767-2.325 10.055 0 6.164 2.409 11.714 6.909 16.03 4.484 4.336 10.167 6.54 16.888 6.54 7.085 0 13.373-2.667 18.17-7.716 4.76-5.005 7.185-11.633 7.185-19.703.017-9.079-3.554-16.899-10.302-22.618z" />
+                </svg>
+                음성인식 소환
+              </a>
+            </div>
+          </div>
+
+          {% comment %} Profile Section 4 {% endcomment %}
+          <div class="side-wrapper">
+            <div class="side-title">옵션</div>
+            <div class="side-menu">
+              <a href="{% url 'movies:choice' %}">
+                <i class="fas fa-fill-drip" style="margin-right: 10px;"></i>
+                색채 고르기
+              </a>
+              <a href="{% url 'movies:index' 1 %}">
+                <i class="fas fa-brain" style="margin-right: 10px;"></i>
+                AI Z스코어
+              </a>
+              <a href="{% url 'movies:index' 2 %}">
+                <i class="far fa-star" style="margin-right: 10px;"></i>
+                평점순
+              </a>
+              <a href="{% url 'movies:index' 3 %}">
+                <i class="far fa-clock" style="margin-right: 10px;"></i>
+                최신순
+
+              </a>
+            
+              <a id="backTag" href={% block back_URL %} {% endblock back_URL %}>
+                <i class="fas fa-undo-alt" style="margin-right: 10px;"></i>
+                뒤로가기
+              </a>
+            </div>
+          </div>
+        </div>
+        {% comment %} END Profile {% endcomment %}
+
+        {% block content %}
+
+        {% endblock content %}
+      </div>
+    </div>
+    <div class="overlay-app"></div>
+    </div>
+
+    {% comment %} 음성인식 Modal {% endcomment %}
+      <div class="modal" id="voiceModal">
+        <div class="modal-dialog" style="max-width: 40%; margin-top:200px;">
+          <div class="modal-content" style="min-width: 700px; min-width: 700px; min-height: 350px; border-radius: 30px; background-color: rgba(255,255,192,0.1); backdrop-filter: blur(10px); box-shadow: 2px 7px 15px 8px rgba(0,0,0,0.3);">
+            
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-6">
+                  <video src="{% static 'videos/background.mp4'%}" class='w-100' style="border-radius:20%; opacity:0.8;" autoplay loop muted></video>
+                </div>
+
+                <div class="col-6 d-flex flex-column justify-content-center align-items-center">
+                  <h4 id="voiceText" style="color:white;"> 음성을 기다리고 있어요...</h4>
+                  <h4 class="d-none" id="voiceAnswer" style="color: rgb(242, 206, 85); margin-top:30px;"> 알겠어요, 지금 바로 실행할게요.</h4>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer d-flex justify-content-center align-items-center">
+              <button id="voiceBtn" type="button" class="btn btn-danger w-50 h-75 d-flex justify-content-center align-items-center" style="opacity: 0.8; border-radius: 20px;">
+                <i class="fas fa-microphone-alt" style="font-size:35px;"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    {% block option_modal %}
+    {% endblock option_modal %}
+
+  <!-- Search Event -->
+  <script>
+    const searchInput = document.querySelector('#searchInput')
+    const searchButton = document.querySelector('#searchButton')
+  
+    searchInput.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        searchButton.click()
+      }
+    })
+  </script>
+
+  {% comment %} Bootstrap JS CDN {% endcomment %}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  
+  {% comment %} 음성인식 {% endcomment %}
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script>
+    // Required Definition
+    const voiceBtn = document.querySelector('#voiceBtn')
+    const voiceText = document.querySelector('#voiceText')
+    const processURL = '/movies/voice_process/'
+    const voiceAnswer = document.querySelector('#voiceAnswer')
+
+    let speech = new webkitSpeechRecognition // Voice Recording Tool
+    let flag = true // start|stop flag
+
+    voiceBtn.addEventListener('click', function () {
+      if (flag) {
+        speech.start()
+        voiceText.innerText = "듣고 있어요..."
+        voiceBtn.innerHTML = '<i class="fas fa-stop" style="font-size:35px;"></i>'
+        voiceAnswer.classList.add('d-none')
+        flag = false
+      } else {
+        speech.stop()
+        voiceBtn.innerHTML = '<i class="fas fa-microphone-alt" style="font-size:35px;"></i>'
+        flag = true
+        
+        // Connecting to voice_process in View
+        axios({
+          method: 'GET',
+          url: processURL,
+          params: {
+            data: voiceText.textContent,
+          }
+        })
+          .then(function (response) {
+            const res = response.data.res // Number for Recognition
+            if (res != 0 && res <= 3) {
+                // href to Main by Sorting
+              voiceAnswer.classList.remove('d-none')
+              voiceAnswer.innerText = "알겠어요, 바로 실행할게요."
+              setTimeout(function() {
+                window.location.href = `/movies/index/${res}`
+              }, 1000);  
+            } else if (res >= 4) {
+              if (res == 4) {
+                // Search
+                let query = response.data.query
+                const searchInput = document.querySelector('#searchInput')
+                const searchButton = document.querySelector('#searchButton')
+                searchInput.value = query
+                voiceAnswer.classList.remove('d-none')
+                voiceAnswer.innerText = "알겠어요, 바로 실행할게요."
+                setTimeout(function() {
+                  searchButton.click()
+                }, 1000);
+              } else if (res == 5) {
+                // Click BackBtn
+                voiceAnswer.classList.remove('d-none')
+                voiceAnswer.innerText = "알겠어요, 바로 실행할게요."
+                setTimeout(function() {
+                  let backTag = document.querySelector('#backTag')
+                  backTag.click()
+                }, 1000);
+              } else if (res == 6) {
+                // About UserInfo Update
+                voiceAnswer.classList.remove('d-none')
+                voiceAnswer.innerText = "알겠어요, 바로 실행할게요."
+                setTimeout(function() {
+                window.location.href = '/accounts/logout'
+              }, 1000);
+              }
+            } else {
+              voiceAnswer.classList.remove('d-none')
+              voiceAnswer.innerText = "해당 서비스는 준비중입니다."
+            }
+          })
+        }})
+    
+    // Recording Response Tracking
+    speech.addEventListener("result", function (event) {
+      const { transcript } = event["results"][0][0]
+      voiceText.innerText = `"${transcript}"`
+    })
+  </script>
+  {% block option_js %} {% endblock option_js %}
+  </body>
+</html>

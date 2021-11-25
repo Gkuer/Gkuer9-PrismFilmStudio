@@ -1,0 +1,22 @@
+body {
+  color: #fff;
+  background: #171F30;
+}
+
+h1 {
+  writing-mode: vertical-rl;
+  font-size: 100px;
+}
+
+span.pink {
+  color: hotpink;
+}
+
+span.cyan {
+  color: skyblue;
+}
+
+
+span.rec {
+  color:red;
+}

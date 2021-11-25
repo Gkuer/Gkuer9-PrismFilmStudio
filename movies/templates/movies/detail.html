@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block option_import %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="{% static 'movies/css/detail.css' %}">
+{% endblock option_import %}
+
+{% block back_URL %} "{% url 'movies:index' 1 %}" {% endblock back_URL %}
+
+{% block content %} 
+<div class="main-container">
+  <div class="main-header">
+  </div>
+  <div class="content-wrapper">
+    {% comment %} Movie Information {% endcomment %}
+    <div class="content-section mt-3">
+      <div class="app-card">
+        <span>
+          <div class="row">
+            {% comment %} Title {% endcomment %}
+            <div class="col-3">
+              <div class="d-flex justify-content-center align-items-center h-100 w-100 " style="position:relative;" data-toggle="modal" data-target="#trailerModal">
+              <img src="{{ movie.poster_url }} " alt="" class="h-100" style="border-radius: 10%; position:absolute;">
+              <i class="far fa-play-circle" style="font-size:120px; z-index:100;"></i>
+              </div>
+            </div>
+        </span>
+        {% comment %} Contents {% endcomment %}
+        {% for color in movie.color_set.all %}
+        <div class="col-9">
+          <div class="row">
+            <div class="col-7">
+              <h1> {{ movie.title }} </h1>
+            </div>
+            <div class="col-5 d-flex justify-content-between align-items-center">
+              <i class="fas fa-square" style="color: rgb({{color.color_1_R}},{{color.color_1_G}},{{color.color_1_B}}); font-size: 70px; opacity: 0.9;"></i>
+              <i class="fas fa-square" style="color: rgb({{color.color_2_R}},{{color.color_2_G}},{{color.color_2_B}}); font-size: 70px; opacity: 0.9;"></i>
+              <i class="fas fa-square" style="color: rgb({{color.color_3_R}},{{color.color_3_G}},{{color.color_3_B}}); font-size: 70px; opacity: 0.9;"></i>
+              <i class="fas fa-square" style="color: rgb({{color.color_4_R}},{{color.color_4_G}},{{color.color_4_B}}); font-size: 70px; opacity: 0.9;"></i>
+              <i class="fas fa-square" style="color: rgb({{color.color_5_R}},{{color.color_5_G}},{{color.color_5_B}}); font-size: 70px; opacity: 0.9;"></i>
+            </div>
+          </div>
+          <div class="app-card__subtext">
+            {{ movie.overview }}
+          </div>
+          <div style="font-size: 17px; font-weight: 400; line-height: 1.6em; border-bottom: 1px solid var(--border-color); padding: 10px;">
+            <h5>평균 평점 : {{ movie.naver_grade }} 점 / 유저 평점 : {{ user_grade }} 점</h5>
+          </div>
+          <div style="font-size: 17px; font-weight: 400; line-height: 1.6em; border-bottom: 1px solid var(--border-color); padding: 10px;">
+            <h5>개봉일 : {{ movie.release_date }}</h5>
+          </div>
+          <div class="d-flex justify-content-center align-items-center" style="height:100px;" data-toggle="modal" data-target="#imageModal">
+            {% comment %} Image from Static {% endcomment %}
+            {% with movie.pk|stringformat:"i" as moviepk %}
+            {% with 'movies/images/'|add:moviepk|add:'.png' as image_static %}
+            <img src="{% static image_static %}" alt="" class="h-75 w-100" id="color_url">
+            {% endwith %}
+            {% endwith %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% comment %} Movie Comment {% endcomment %}
+    <div class="content-section mt-3">
+      <div class="app-card">
+        <h2> 한줄평 </h2>
+        <hr>
+        {% comment %} Comment Create {% endcomment %}
+        <div>
+          <form action="{% url 'movies:movie_comment' movie.pk %}" method="POST" name="myform" id="myform"
+            class="d-flex">
+            {% csrf_token %}
+
+            {% comment %} Stars {% endcomment %}
+            <div id="full-stars-example-two">
+              <div class="rating-group">
+                <label aria-label="1 star" class="rating__label" for="grade-1"><i
+                    class="rating__icon rating__icon--star fa fa-star"></i></label>
+                <input class="rating__input" name="grade" id="grade-1" value="1" type="radio">
+                <label aria-label="2 stars" class="rating__label" for="grade-2"><i
+                    class="rating__icon rating__icon--star fa fa-star"></i></label>
+                <input class="rating__input" name="grade" id="grade-2" value="2" type="radio">
+                <label aria-label="3 stars" class="rating__label" for="grade-3"><i
+                    class="rating__icon rating__icon--star fa fa-star"></i></label>
+                <input class="rating__input" name="grade" id="grade-3" value="3" type="radio">
+                <label aria-label="4 stars" class="rating__label" for="grade-4"><i
+                    class="rating__icon rating__icon--star fa fa-star"></i></label>
+                <input class="rating__input" name="grade" id="grade-4" value="4" type="radio">
+                <label aria-label="5 stars" class="rating__label" for="grade-5"><i
+                    class="rating__icon rating__icon--star fa fa-star"></i></label>
+                <input class="rating__input" name="grade" id="grade-5" value="5" type="radio" checked>
+              </div>
+            </div>
+            {% comment %} Comment Input {% endcomment %}
+            <hr>
+            <hr>
+            <input type="text" name="content" style="background: none; margin-left: 20px; width: 400px; color:white;">
+            <button class="btn btn-warning" style="font-weight: 500px; font-size: 20px; margin-left: 5px; width:100px;">등록</button>
+            <hr>
+            <hr>
+          </form>
+        </div>
+        <div class="app-card__subtext">
+          {% comment %} Comment View {% endcomment %}
+          {% for comment in comments %}
+          <div id="div{{ comment.id }}" onload="loadFunc()">
+            {% comment %} StarsNum {% endcomment %}
+            {% if comment.grade == 1 %}
+            <p><i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; padding: 0 0.1em; font-size: 2rem;"></i></p>
+            {% elif comment.grade == 2%}
+            <p><i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+            </p>
+            {% elif comment.grade == 3%}
+            <p>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+            </p>
+            {% elif comment.grade == 4%}
+            <p>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+            </p>
+            {% else %}
+            <p><i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+              <i class="rating__icon rating__icon--star fa fa-star"
+                style="color:orange; cursor: pointer; font-size: 2rem;"></i>
+            </p>
+            {% endif %}
+
+            <div class="d-flex justify-content-between align-items-center">
+            <div>
+            <h5 style="display:inline;">{{ comment.content }} </h5>- {{ comment.user}}
+            </div>
+            {% if request.user == comment.user %}
+            <form action="{% url 'movies:movie_comment_delete' comment.pk movie.pk %}" method="POST">
+            {% csrf_token %}
+            <button class="btn btn-danger" style="font-weight: 250px; font-size: 15px; margin-left: 5px; width:60px;">삭제</button>
+            </form>
+            {% endif %}
+            </div>
+
+          </div>
+          <hr>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="content-section mt-3">
+        <div class="app-card">
+          {% comment %} Review {% endcomment %}
+          <h2> 리뷰 </h2>
+
+          {% comment %} Review Create {% endcomment %}
+          <h4 style="text-align: right;"> <a href="{% url 'movies:review_create' movie.pk %}"> 
+          <button class="btn btn-warning" style="font-weight: 500px; font-size: 20px; margin-left: 5px; width:100px;"> 리뷰쓰기 </button></a></h4>
+
+          {% comment %} Review List {% endcomment %}
+          {% for review in reviews %}
+          <div OnClick="location.href ='{% url 'movies:review' review.pk %}'" style="cursor:pointer;">
+            <div class="app-card__subtext">
+              <div class="d-flex justify-content-between align-items-center">
+                <h3> <{{ review.title }}> </h5>
+                {% if request.user == review.user %}
+                <form action="{% url 'movies:review_delete' movie.pk review.pk %}" method="POST">
+                {% csrf_token %}
+                <button class="btn btn-danger" style="font-weight: 250px; font-size: 15px; margin-left: 5px; width:60px;">삭제</button>
+                </form>
+                {% endif %}
+              </div>
+              <h5>{{ review.content }}</h5>
+              <p style="text-align: right;">{{ review.user }}</p>
+              <div>
+              {% if review.draw %}
+              <img src="{{review.draw.url}}" alt="" style="height:250px; border-radius:10%; opacity: 0.8;">
+              {% endif %}
+              </div>
+            </div>
+          </div>
+          <hr>
+          {% endfor %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block option_modal %}
+<!-- Frame Expansion Modal -->
+<div class="modal" id="imageModal" tabindex="-1">
+  <div class="modal-dialog" style="max-width: 60%; margin-top: 300px;">
+    <div class="modal-content" class="modal-content" style="border-radius: 30px; background-color: rgba(255,255,192,0.1); backdrop-filter: blur(10px); box-shadow: 2px 7px 15px 8px rgba(0,0,0,0.3);">
+      <div class="modal-frame-body">
+        <img src="" alt="" id="frameImg" style="padding:16px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Trailer Modal -->
+<div class="modal" id="trailerModal" tabindex="-1">
+  <div class="modal-dialog " style="max-width: 60%;">
+    <div class="modal-content" class="modal-content" style="border-radius: 30px; background-color: rgba(255,255,192,0.1); backdrop-filter: blur(10px); box-shadow: 2px 7px 15px 8px rgba(0,0,0,0.3);">
+      <div class="modal-trailer-body" style="width: 100%; height:700px; border-radius:20%;">
+        <iframe src="https://www.youtube.com/embed/{{movie.trailer_url}}?autoplay=1&mute=1" frameborder="0" width="100%" height="100%" style="padding:16px;"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock option_modal %}
+
+{% block option_js %}
+  {% comment %} Frame Expansion Script {% endcomment %}
+  <script>
+    const color_url = document.querySelector('#color_url')
+    const src = color_url.getAttribute('src')
+    const imagemodal = document.querySelector('#imagemodal')
+    const color_barcode = document.querySelector('#frameImg')
+    color_url.addEventListener('click', function(event) {
+      color_barcode.src = src
+    })
+  </script>
+  
+  {% comment %} Trailer Script {% endcomment %}
+  <script>
+    let trailerModal = document.querySelector('#trailerModal')
+    let iframe = document.querySelector('iframe')
+    window.addEventListener('click', function (){
+      iframe.setAttribute("src",iframe.getAttribute("src"))
+    })
+  </script>
+{% endblock option_js %}

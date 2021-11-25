@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block back_URL %} "{% url 'movies:choice' %}" {% endblock back_URL %}
+
+{% block content %}
+<div class="main-container">
+  <div class="main-header">
+  </div>
+  <div class="content-wrapper">
+    {% for movie, score in movies %}
+    <div class="content-section mt-3">
+      <div class="app-card" OnClick="location.href ='{% url 'movies:detail' movie.pk %}'" style="cursor:pointer;">
+        <span>
+          <div class="row">
+          {% comment %} Left Side {% endcomment %}
+            <div class="col-6">
+              <div class="row">
+                {% comment %} Movie Info {% endcomment %}
+                <img src="{{ movie.poster_url }}" alt="" class="col-6" style="border-radius: 10%">
+                <div class="col-6" style="height:400px;">
+                  <h3>{{ movie.title }}</h3>
+                  <div style="height: 150px;">
+                  {{ movie.overview|truncatechars:125 }}
+                  </div>
+                  {% comment %} Score Center {% endcomment %}
+                  <div class="h-50">
+
+                  {% if mode == 2 %}
+                   <h4 class="mt-2">평점 평균 :</h4>
+                   <div class="d-flex align-items-center justify-content-center h-75">
+                   <h1 class="mb-5" style="font-size: 80px;">{{ score }}</h1>
+                   </div>
+                  </div>
+
+                  {% elif mode == 3 %}
+                    <h4 class="mt-2">개봉일 :</h4>
+                    <div class="d-flex align-items-center justify-content-center h-75">
+                    <h1 class="mb-5" style="font-size: 50px;">{{ score }}</h1>
+                    </div>
+                  </div>
+
+                  {% elif mode == 4 %}
+                    <h4 class="mt-2">일치점수 :</h4>
+                    <div class="d-flex align-items-center justify-content-center h-75">
+                    <h1 class="mb-5" style="font-size: 80px;">{{ score }}</h1>
+                    </div>
+                  </div>
+
+                  {% else %}
+                  <h4 class="mt-2">AI Z스코어 :</h4>
+                   <div class="d-flex align-items-center justify-content-center h-75">
+                   <h1 class="mb-5" style="font-size: 80px;">{{ score }}</h1>
+                   </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            {% comment %} Right Side {% endcomment %}
+            {% for color in movie.color_set.all %}
+            <div class="col-6" style="height: 400px;">
+              <div class="h-50">
+                <div class="side-title"> 프레임 클러스터링 </div>
+                  {% comment %} Image from Static {% endcomment %}
+                  {% with movie.pk|stringformat:"i" as moviepk %}
+                  {% with 'movies/images/'|add:moviepk|add:'.png' as image_static %}
+                  <img src="{% static image_static %}" alt="" class="h-75">
+                  {% endwith %}
+                  {% endwith %}
+              </div>
+
+              <div class="h-50 mt-3">
+                <div class="side-title"> 영화의 색 </div>
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                <i class="fas fa-square" style="color: rgb({{color.color_1_R}},{{color.color_1_G}},{{color.color_1_B}}); font-size: 110px; opacity: 0.9;"></i>
+                <i class="fas fa-square" style="color: rgb({{color.color_2_R}},{{color.color_2_G}},{{color.color_2_B}}); font-size: 110px; opacity: 0.9;"></i>
+                <i class="fas fa-square" style="color: rgb({{color.color_3_R}},{{color.color_3_G}},{{color.color_3_B}}); font-size: 110px; opacity: 0.9;"></i>
+                <i class="fas fa-square" style="color: rgb({{color.color_4_R}},{{color.color_4_G}},{{color.color_4_B}}); font-size: 110px; opacity: 0.9;"></i>
+                <i class="fas fa-square" style="color: rgb({{color.color_5_R}},{{color.color_5_G}},{{color.color_5_B}}); font-size: 110px; opacity: 0.9;"></i>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </span>
+        
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

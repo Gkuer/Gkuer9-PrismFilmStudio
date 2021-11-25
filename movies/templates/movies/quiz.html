@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block back_URL %} "{% url 'movies:index' 2 %}" {% endblock back_URL %}
+
+{% block content %}
+<div class="main-container">
+  <div class="main-header">
+  </div>
+  <div class="content-wrapper">
+    <div style="text-align: right;" class="d-flex justify-content-between"> 
+        <div></div>
+        <a href="{% url 'movies:quiz_create' %}" class="btn btn-warning d-flex align-items-center justify-content-center" style="vertical-align: center; width:150px; height:50px; display:inline; font-size:22px; bolder: bolder;">문제 만들기</a>
+    </div>
+    <div class="content-section mt-3">
+      <div class="app-card">
+        <span>
+            <div class="row">
+              <h1>티어는 총 5단계이며, 일정 포인트를 충족하면 티어가 상승합니다.</h1>
+            </div>
+        </span>
+      </div>
+    </div>
+
+    <div class="content-section mt-3">
+      <div class="app-card">
+        <span>
+          <div class="row">
+            <h3>당신의 포인트는 <b class="text-warning">{{ request.user.point }}점</b>
+              {% if required_point %}
+                이며, <b class="text-warning">{{ required_point }}점</b>을 올리면 다음 단계로 상승합니다.
+              {% else %}
+                입니다.
+              {% endif %}
+            </h3>
+            <p>리뷰 작성은 30점, 한줄평은 10점, 리뷰 댓글 작성은 5점이 부여됩니다.</p>
+            <p>문제 제출 시 30점이 부여됩니다.</p>
+            <p>밑의 문제들을 맞추면 각각 20점이 부여됩니다.</p>
+          </div>
+        </span>
+      </div>
+    </div>
+    {% for quiz,quiz_examples in quizs_list %}
+      {% with solved_user=quiz.correct_user.all%}
+      {% if user in solved_user %}
+      {% else %}
+      <div class="content-section mt-3" id="question_card{{ quiz.pk }}">
+          <div class="app-card">
+            <div id="main{{quiz.id}}">
+              <div class='row'>
+                <div class="col-6">
+                  <div class="d-flex justify-content-center align-items-center" style="position:relative; height:500px;">
+                    <img src="{{ quiz.draw.url }}" alt="로고" class="h-100" style="border-radius: 10%; position:absolute; opacity:0.7;" class="h-100">
+                  </div>
+                </div>
+                <div class="col-5">
+                  <div class="row d-flex justify-content-center align-items-center">
+                    <div class="side-title"> <h2 style="text-align:center; margin-left:100px;">답을 알려주세요</h2></div>
+                  </div>
+                  <form id="answerForm" style="width:600px;" data-question-pk="{{ quiz.pk }}">
+                  {% csrf_token %}
+                  {% for example in quiz_examples %}
+                  {% if example == quiz %}
+                    <button class="btn btn-primary w-100 my-1" style="background-color:transparent; height:80px;" name="question" value={{example.movie.id}}><h5>{{ example.movie.title }}</h5></button>
+                  {% else %}
+                    <button class="btn btn-primary w-100 my-1" name="question" style="height:80px; background-color:transparent;" value={{example.id}}><h5>{{ example.title }}</h5></button>
+                  {% endif %}
+                  {% endfor %}
+                  </form>
+
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center align-items-center d-none" id="right{{quiz.id}}" style="height:500px;">
+              <i class="far fa-check-circle" style="font-size:250px; color:aquamarine; opacity: 0.7;" ></i>
+            </div>
+            <div class="d-flex justify-content-center align-items-center d-none" id="wrong{{quiz.id}}" style="height:500px;">
+              <i class="far fa-times-circle" style="font-size:250px; color:orange; opacity: 0.7;" ></i>
+            </div>
+          </div>
+      </div>
+      <div class="alert alert-success" id="alert{{ question.pk }}" style="visibility: hidden;">
+        <a href="#" class="close" data-dismiss="alert">&times;</a>
+        <strong>정답입니다!</strong>
+      </div>
+      {% endif %}
+      {% endwith %}
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block option_js %}
+<script>
+  const forms = document.querySelectorAll("#answerForm")
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+  for(const form of forms){
+    form.addEventListener("submit", function (event) {
+      event.preventDefault()
+      const questionPk = event.target.dataset.questionPk
+      const answer = event.submitter.value
+
+      axios({
+        method: 'post',
+        url: '/movies/quiz_check/',
+        headers: {'X-CSRFToken': csrfToken},
+        data: {
+          test: "Test",
+          question_pk: `${questionPk}`,
+          answer: `${answer}`,
+        }
+      })
+        .then(function (res) {
+          const correct = res.data.correct
+          const main = document.querySelector(`#main${questionPk}`)
+          const right = document.querySelector(`#right${questionPk}`)
+          const wrong = document.querySelector(`#wrong${questionPk}`)
+
+          if (correct) {
+            main.classList.add('d-none')
+            right.classList.remove('d-none')
+          } else {
+            main.classList.add('d-none')
+            wrong.classList.remove('d-none')
+          }
+        })
+        .catch(function (err) {
+          console.log(err)
+        })
+    })
+  } 
+
+</script>
+{% endblock option_js %}

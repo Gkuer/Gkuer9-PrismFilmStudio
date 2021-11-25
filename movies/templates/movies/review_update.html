@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block back_URL %} "{% url 'movies:review' review.pk %}" {% endblock back_URL %}
+
+{% block content %}
+<div class="main-container">
+  <div class="main-header">
+  </div>
+  <div class="content-wrapper">
+    <form action="{% url 'movies:review_update' review.pk %}" method="POST">
+      {% csrf_token %}
+      <div class="content-section mt-3">
+        <h3> 제목 </h3>
+        <div class="app-card mt-3">
+          <input style="background: none; border:none; color:white; font-size:25px;" type="text" name="title"  value="{{review.title}}">
+        </div>
+      </div>
+
+      <div class="content-section mt-5">
+        <h3> 내용 </h3>
+        <div class="app-card mt-3">
+          <input style="background: none; border:none; color:white; height: 250px; font-size: 20px;" type="text"
+            name="content" value="{{review.content}}">
+        </div>
+      </div>
+
+      <div class="content-section mt-3">
+        <div class="app-card mt-5">
+          <button style="background: none; border:none;">
+            <h1 style="color:white;">수정하기</h1>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

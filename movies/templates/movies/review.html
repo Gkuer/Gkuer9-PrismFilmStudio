@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block back_URL %} "{% url 'movies:detail' review.movie.pk %}" {% endblock back_URL %}
+
+{% block content %}
+<div class="main-container">
+  <div class="main-header">
+  </div>
+  <div class="content-wrapper">
+    <div class="content-section mt-3">
+      <div class="app-card mt-3 d-flex">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1> {{ review.title }} </h1>
+          {% if request.user == review.user %}
+          <div class="d-flex">
+            <button class="btn btn-success" onclick="location.href = '{% url 'movies:review_update' review.pk %}'" style="font-weight: 250px; font-size: 15px; margin-left: 5px; width:60px;">수정</button>
+            <form action="{% url 'movies:review_delete' review.movie.pk review.pk %}" method="POST">
+              {% csrf_token %}
+              <button class="btn btn-danger" style="font-weight: 250px; font-size: 15px; margin-left: 5px; width:60px;">삭제</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+        <h5 style="text-align: right;"> {{ review.user }} </h5>
+      </div>
+    </div>
+    
+    {% if review.draw %}
+    <div class="content-section">
+      <div class="app-card mt-3">
+        <img src="{{ review.draw.url }}" alt="" style="width:400px; height:400px; border-radius:10%; opacity: 0.8;">
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="content-section">
+      <div class="app-card mt-3">
+        <h3> {{ review.content }} </h3>
+      </div>
+    </div>
+
+    <div class="content-section mt-5">
+      <h3> 댓글 </h3>
+      <div class="content-section">
+        <div class="app-card mt-3">
+          {% for comment in review.comments.all %}
+          <div class="d-flex justify-content-between">
+            <p> {{ comment.content }} </p>
+            <div>
+            {{ comment.user }} 
+            {% if request.user == comment.user %}
+            <form action="{% url 'movies:review_comment_delete' review.pk comment.pk %}" method="POST" class="d-inline">
+            {% csrf_token %}
+            <button class="btn btn-danger" style="font-weight: 250px; font-size: 15px; margin-left: 5px; width:60px;">삭제</button>
+            </form>
+            {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="app-card mt-3">
+        {% comment %} Comment Input {% endcomment %}
+        <form action="{% url 'movies:review_comment' review.pk %}" method="POST">
+          {% csrf_token %}
+          <input type="text" name="content"
+            style="background: none; margin-left: 20px; width: 1100px; color:white; border:none; font-size: 25px;">
+          <button class="btn btn-warning" style="font-weight: 500px; font-size: 20px; margin-left: 5px; width:100px;">
+            등록</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,30 @@
+body {
+  color: #fff;
+  background: #171F30;
+}
+
+span.pink {
+  color: hotpink;
+}
+
+span.cyan {
+  color: skyblue;
+}
+
+input {
+  opacity: 0.8;
+}
+
+label {
+  margin-top: 20px;
+}
+
+button.login {
+  margin-top: 40px;
+  background-color: hotpink;
+}
+
+button.signup {
+  margin-top: 10px;
+  background-color: skyblue;
+}

@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap5 %}
+
+{% block option_import %} <link rel="stylesheet" href="{% static 'movies/css/draw.css' %} ">{% endblock option_import %}
+
+{% block back_URL %} "{% url 'movies:quiz' %}" {% endblock back_URL %}
+
+{% block content %}
+<div class="main-container">
+  <div class="main-header">
+  </div>
+  <div class="content-wrapper">
+    <form action="{% url 'movies:quiz_create' %}" method="POST" enctype="multipart/form-data" id="drawForm">
+      {% csrf_token %}
+      <div class="content-section mt-3">
+        <h3> 영화고르기 </h3>
+        <div class="app-card mt-3">
+          <select name="movie" id="selectedMovie"  class="form-select" title required style="font-size: 20px; background: rgba(0, 0, 0, 0.3); color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);">
+            <option value selected>---------</option>
+          {% for movie in movies %}
+            <option value="{{movie.pk}}"> {{ movie.title }} </option>
+          {% endfor %}
+          </select>
+        </div>
+      </div>
+      
+      <div class="content-section mt-3">
+        <div class="app-card mt-5">
+          <button style="background: none; border:none;" id="drawBtn">
+            <h1 style="color:white;">스케치북 열기</h1>
+          </button>
+        </div>
+      </div>
+
+      <div class="content-section d-none" id="drawWindow">
+        <div class="app-card mt-3">
+          <div class="row d-flex justify-content-center align-items-center">
+            <canvas id="drawCanvas" class="canvas col-6" style="opacity: 0.8;"></canvas>
+            <div class="controls col-5">
+              <div class="controls__range">
+                  <input type="range" id="jsRange" min="0.1" max="10.0" value="5.0" step="0.1" style="width:200"/>
+              </div>
+
+              <div class="controls__btns">
+                  <button id="jsMode" style="opacity: 0.8;">펜</button>
+              </div>
+              <div class="controls__colors" id="jsColors">
+                <div class="controls__color jsColor" style="background-color: black"></div>
+                <div class="controls__color jsColor" style="background-color: white"></div>
+                <div class="controls__color jsColor" style="background-color: red"></div>
+                <div class="controls__color jsColor" style="background-color: orange"></div>
+                <div class="controls__color jsColor" style="background-color: yellow"></div>
+                <div class="controls__color jsColor" style="background-color: green"></div>
+                <div class="controls__color jsColor" style="background-color: skyblue"></div>
+                <div class="controls__color jsColor" style="background-color: blue"></div>
+                <div class="controls__color jsColor" style="background-color: purple"></div>
+              </div>  
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section mt-3">
+        <div class="app-card mt-5">
+          <button style="background: none; border:none;" onclick="submitFunc()">
+            <h1 style="color:white;">문제 출제</h1>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}
+
+<!-- Draw & Axios JS-->
+{% block option_js %}
+<script>
+const drawBtn = document.querySelector('#drawBtn')
+const drawWindow = document.querySelector('#drawWindow')
+let drawBtnFlag = true
+
+drawBtn.addEventListener('click', function (event) {
+  event.preventDefault()
+  if (drawBtnFlag) {
+    drawWindow.classList.remove('d-none')
+    drawBtnFlag = false
+  } else {
+    drawWindow.classList.add('d-none')
+    drawBtnFlag = true
+  }
+})
+
+const canvas = document.getElementById("drawCanvas");
+const ctx = canvas.getContext("2d");
+const colors = document.getElementsByClassName("jsColor");
+const range = document.getElementById("jsRange");
+const mode = document.getElementById("jsMode");
+const save = document.getElementById("jsSave");
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
+const INITIAL_COLOR = "black";
+const CANVAS_SIZE = 700;
+
+canvas.width = CANVAS_SIZE;
+canvas.height = CANVAS_SIZE;
+
+ctx.fillStyle = "white";
+ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+ctx.strokeStyle = INITIAL_COLOR;
+ctx.fillStyle = INITIAL_COLOR;
+ctx.lineWidth = 2.5;
+
+let painting = false;
+let filling = false;
+
+function stopPainting(){
+    painting = false;
+}
+
+function startPainting(){
+    painting = true;
+}
+
+function onMouseMove(evnet){
+    const x = event.offsetX;
+    const y = event.offsetY;
+    if(!painting){
+        ctx.beginPath();
+        ctx.moveTo(x,y);
+    } else {
+        ctx.lineTo(x,y);
+        ctx.stroke();
+    }
+}
+
+function handleColorClick(event){
+    const color = event.target.style.backgroundColor;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+}
+
+function handleRangeChange(event){
+    const size = event.target.value;
+    ctx.lineWidth = size;
+}
+
+function handleModeClick(){
+    if(filling === true){
+        event.preventDefault()
+        filling = false;
+        mode.innerText = "펜";
+    }else{
+        event.preventDefault()
+        filling = true;
+        mode.innerText = "배경 채우기";
+    }
+}
+
+function handleCanvasClick(){
+    if(filling){
+        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    }
+}
+
+function handleCM(event){
+    event.preventDefault();
+}
+
+
+if(canvas){
+  canvas.addEventListener("mousemove", onMouseMove);
+  canvas.addEventListener("mousedown", startPainting);
+  canvas.addEventListener("mouseup", stopPainting);
+  canvas.addEventListener("mouseleave", stopPainting);
+  canvas.addEventListener("click", handleCanvasClick);
+  canvas.addEventListener("contextmenu", handleCM);
+}
+
+Array.from(colors).forEach(color => 
+  color.addEventListener("click", handleColorClick)
+);
+
+if(range){
+  range.addEventListener("input", handleRangeChange);
+}
+
+if(mode){
+  mode.addEventListener("click", handleModeClick);
+}
+
+if(save){
+  save.addEventListener("click", handleSaveClick);
+}
+
+function submitFunc(){
+  event.preventDefault()
+  let drawCanvas = document.querySelector('#drawCanvas')
+
+  data = new FormData()
+
+  var imgDataUrl = drawCanvas.toDataURL('image/png');
+  var binaryData = atob(imgDataUrl.split(',')[1]);
+  var array = [];
+  for (var i = 0; i < binaryData.length; i++) {
+    array.push(binaryData.charCodeAt(i));
+  }
+  var blob = new Blob([new Uint8Array(array)], {type: 'image/png'});
+
+  const selectedMovie = document.querySelector('#selectedMovie')
+
+  data.set('draw', blob, 'my_draw.png')
+  data.set('movie', selectedMovie.options[selectedMovie.selectedIndex].value)
+
+  axios({
+    url: '',
+    method: 'POST',
+    data: data,
+    headers: {"X-CSRFToken": csrfToken, "Content-Type": "multipart/form-data" },
+  })
+    .then(response => {
+      window.location.href = '/movies/quiz/'
+    })
+    .catch(err => {
+      alert("작성 값에 이상이 있어요")
+    })
+}
+
+</script>
+{% endblock option_js %}
