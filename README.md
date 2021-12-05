@@ -1,11 +1,13 @@
 <h1 align="center" style="max-width: 100%;">
   <img width="1100" alt="Logo" src="README.assets/Logo.png" style="max-width: 100%;" /><br/>
-  <a href="https://www.prismfilmstudio.com">             www.prismfilmstudio.com</a>
+  <a href="https://www.prismfilmstudio.com">www.prismfilmstudio.com(배포중지)</a>
 </h1>
 
 
+
 <h3 align="center">
- 클러스터링 기반 색채 추출 및 계산/ 음성인식 / 드로잉<br /></h3>
+ 프로젝트 최우수상 (1등) 수상 - 삼성전자<br /></h3>
+
 
 
 ###                                  
@@ -37,8 +39,9 @@
   </tbody>
 </table>
 <h6 align="center">
-  www.prismfilmstudio.com <a href="https://prismfilmstudio.com"></a>
+  www.prismfilmstudio.com <a href="#"></a>
 </h6>
+
 
 
 
