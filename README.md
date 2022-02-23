@@ -13,7 +13,7 @@
 ###                                  
 
 <p align="center">
-  <b>SSAFY 1학기 최종 프로젝트(21.11.17 ~ 21.11.24)</b><br /></p>
+  
 
 
 <p align="center">
