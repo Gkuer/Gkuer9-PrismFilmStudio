@@ -188,7 +188,7 @@ final-pjt
 
 <br>
 
-## Python, Django ORM을 활용한 데이터 주입
+## 🪐 Python, Django ORM을 활용한 데이터 주입
 
 #### Static 데이터인 영화 데이터를 재구성해서 DB에 추가할 필요
 
