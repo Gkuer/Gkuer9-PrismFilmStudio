@@ -30,7 +30,23 @@
 
 
 
+<table style="table-layout: fixed; overflow-wrap: break-word;">
+  <tbody>
+    <tr>
+      <td><a href="#" target="_blank"><img width="500" src="README.assets/voice.gif" alt="iPhone demo" style="max-width: 100%;" /></a></td>
+      <td><a href="#" target="_blank"><img width="500" src="README.assets/choice.gif" alt="Music app demo" style="max-width: 100%;" /></a></td>
+      <td rowspan="2" style="display:flex-column;"><img height="250" src="README.assets/detail3.gif" alt="Full page demo" style="max-width: 100%;" /><div style="height:15px;"></div></div><img height="250" src="README.assets/draw5.png" alt="Full page demo" style="max-width: 100%;" /></td>
+    </tr>
+    <tr>
+      <td colspan="2"><a href="#" target="_blank"><img width="1000" src="README.assets/main5.png" alt="Parallax demo" style="max-width: 100%;" /></a></td>
+    </tr>
+  </tbody>
+</table>
+<h6 align="center">
+  www.prismfilmstudio.com <a href="#"></a>
+</h6>
 
+<br>
 
 ## 💁🏻 About Project
 
