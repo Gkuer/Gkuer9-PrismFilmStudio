@@ -75,7 +75,7 @@
 
 ## ✨ Stack
 
-#### 주요  Stack
+<h4 align="center">주요  Stack </h4>
 
 |                        Content                         |           Main            |                          Detail                          |
 | :----------------------------------------------------: | :-----------------------: | :------------------------------------------------------: |
@@ -90,7 +90,7 @@
 
 
 
-#### 기본 Stack
+<h4 align="center">기본 Stack</h4>
 
 |       ent        |      Page       |                         Description                          |
 | :--------------: | :-------------: | :----------------------------------------------------------: |
@@ -110,7 +110,7 @@
 |    유저 티어     |      tier/      | 브론즈부터 마스터까지 리뷰 작성, 문제 풀이 등에서 점수 획득  |
 | 영화 Frame 확대  |     detail/     | detail 페이지에서 영화에 대한 프레임 클릭시  Modal로 확대 출력 |
 
-
+<br>
 
 ## 📦 ERD 설계 및 오픈 API를 활용한 데이터 재구성
 
@@ -185,11 +185,11 @@ final-pjt
 └── requirements.txt
 ```
 
-
+<br>
 
 ## Python, Django ORM을 활용한 데이터 주입
 
-##### Static 데이터인 영화 데이터를 재구성해서 DB에 추가할 필요
+#### Static 데이터인 영화 데이터를 재구성해서 DB에 추가할 필요
 
 - 클러스터링 및 RGB 도출된 데이터
 - TMDB API 영화정보
@@ -197,13 +197,13 @@ final-pjt
 
 
 
-##### 클러스터링 전 프레임 사진 주입
+#### 클러스터링 전 프레임 사진 주입
 
-![Untitled](README.assets/Untitled.png)
+![Untitled](README.assets/untitled.png)
 
 
 
-##### 색채데이터 주입
+#### 색채데이터 주입
 
 ![erd](README.assets/untitled1.png)
 
@@ -213,7 +213,7 @@ final-pjt
 
 
 
-##### Naver 및 TMDB, Youtube 데이터 정제 후 DB에 주입
+#### Naver 및 TMDB, Youtube 데이터 정제 후 DB에 주입
 
 *  Naver 영화 데이터
 
@@ -229,7 +229,7 @@ final-pjt
 
 
 
-##### DB 주입 결과
+#### DB 주입 결과
 
 * 영화 색채 데이터 (RGB * 5)
 
@@ -243,7 +243,7 @@ final-pjt
 
   ![erd](README.assets/untitled8.png)
 
-
+<br>
 
 ## 👱🏼‍♂️ 메인 페이지 관련 코드
 
@@ -292,7 +292,7 @@ final-pjt
                 res_movies.append([movie,temp_cnt])
 ```
 
-
+<br>
 
 ## 👱🏼‍♂️ Blob 데이터를 활용한 드로잉 리뷰 및 퀴즈 기능 구현
 
@@ -354,7 +354,7 @@ def review_create(request, movie_pk):
     return render(request, 'movies/review_create.html', context)
 ```
 
-
+<br>
 
 models.py
 
@@ -369,7 +369,7 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 ```
 
-
+<br>
 
 ## **👱🏼‍♂️** Web Speech API 및 Ajax 통신을 활용한 음성인식 구현
 
@@ -457,7 +457,7 @@ def voice_process(request):
     return JsonResponse(context)
 ```
 
-
+<br>
 
 ## 🚣‍♂️ 데이터베이스 캐싱을 활용한 쿼리 최적화
 
@@ -493,7 +493,7 @@ def voice_process(request):
     res_movies = []
 ```
 
-
+<br>
 
 ## 🏋️ AWS(EC2), Nginx, Gunicorn, Cloud9을 활용한 배포
 
@@ -551,7 +551,7 @@ sudo certbot --nginx
 
 
 
-
+<br>
 
 ## 🏃 팀원 정보 및 업무 분담 내역
 
@@ -569,7 +569,7 @@ sudo certbot --nginx
 
   - 음성인식 / 드로잉 / Design / Quiz / DB / FE / 쿼리 최적화 / 배포
 
-
+<br>
 
 ## 📖 Reference
 
