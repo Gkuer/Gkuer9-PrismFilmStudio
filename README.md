@@ -72,10 +72,11 @@
 
 -----
 
+<br>
 
 ## ✨ Stack
 
-<h4 align="center">주요  Stack </h4>
+### 주요  Stack
 
 |                        Content                         |           Main            |                          Detail                          |
 | :----------------------------------------------------: | :-----------------------: | :------------------------------------------------------: |
@@ -88,9 +89,9 @@
 |           [**Query 최적화**](#query-최적화)            |       Django 3.2.9        |      prefetch_related / annotate / filter / exclude      |
 |                   [**배포**](#배포)                    |            AWS            | EC2(Ubuntu Server 18.04 LTS) / Cloud9 / Gunicorn / NGINX |
 
+<br>
 
-
-<h4 align="center">기본 Stack</h4>
+### 기본 Stack
 
 |       ent        |      Page       |                         Description                          |
 | :--------------: | :-------------: | :----------------------------------------------------------: |
